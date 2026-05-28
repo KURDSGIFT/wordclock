@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos 3D | Ultimate World Clock</title>
+    
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins for UI, Orbitron for Digital Clock -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- VanillaTilt.js for the 3D Hover Effect -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #050509;
+            --card-bg: rgba(20, 20, 35, 0.6);
+            --primary-neon: #0ff; /* Cyan */
+            --secondary-neon: #f0f; /* Magenta */
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(26, 21, 51, 0.5) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(15, 35, 45, 0.5) 0px, transparent 50%);
+            color: var(--text-main);
+            min-h-screen;
+            overflow-x: hidden;
+        }
+
+        /* Essential for 3D effect: The container needs perspective */
+        #clocks-container {
+            perspective: 1000px;
+        }
+
+        .clock-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 30px;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+            
+            /* Crucial for VanillaTilt to preserve 3D elements inside */
+            transform-style: preserve-3d; 
+            will-change: transform;
+        }
+
+        .clock-card:hover {
+            border-color: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+        }
+
+        /* Creating depth for inner elements (Pop-out effect) */
+        .depth-location { transform: translateZ(50px); }
+        .depth-time { transform: translateZ(80px); font-family: 'Orbitron', sans-serif; }
+        .depth-date { transform: translateZ(40px); }
+        .depth-map { transform: translateZ(20px); opacity: 0.1; position: absolute; right: -20px; bottom: -20px; font-size: 150px; pointer-events: none;}
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #1a1a2e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-neon); }
+
+        /* Search input glow */
+        #search-input:focus {
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            border-color: var(--primary-neon);
+        }
+
+        /* Glow effect for times */
+        .time-glow {
+            color: var(--primary-neon);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .pm-glow {
+            color: var(--secondary-neon);
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Header & Search Section -->
+    <header class="max-w-7xl mx-auto mb-12 mt-6 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter">
+                <span style="color: var(--text-main)">CHRONOS</span><span style="color: var(--primary-neon)">3D</span>
+            </h1>
+            <p class="text-muted mt-2 text-lg">Ultra-accurate immersive global time tracker.</p>
+        </div>
+        
+        <div class="relative w-full md:w-96">
+            <input type="text" id="search-input" placeholder="Search country or city..." 
+                   class="w-full px-6 py-4 bg-slate-900/50 border border-slate-800 rounded-full text-white placeholder-slate-500 outline-none transition-all duration-300 text-lg">
+            <span class="absolute right-6 top-4.5 text-xl opacity-50">🔍</span>
+        </div>
+    </header>
+
+    <!-- Main Grid Container -->
+    <main class="max-w-7xl mx-auto">
+        <div id="clocks-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- JavaScript will insert cards here -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto text-center mt-20 py-8 border-t border-slate-800/50">
+        <p class="text-slate-600">&copy; 2023 Chronos3D Studios. Real-time synchronization active.</p>
+    </footer>
+
+    <script>
+        // Comprehensive list covering major countries and timezones
+        // Format: { city, country, zone (IANA Name), icon/emoji }
+        const locations = [
+            { city: "Local Time", country: "Your Location", zone: Intl.DateTimeFormat().resolvedOptions().timeZone, icon: "🏠" },
+            { city: "London", country: "United Kingdom", zone: "Europe/London", icon: "🇬🇧" },
+            { city: "New York", country: "USA", zone: "America/New_York", icon: "🇺🇸" },
+            { city: "Tokyo", country: "Japan", zone: "Asia/Tokyo", icon: "🇯🇵" },
+            { city: "Dubai", country: "UAE", zone: "Asia/Dubai", icon: "🇦🇪" },
+            { city: "Erbil", country: "Iraq", zone: "Asia/Baghdad", icon: "🇮🇶" },
+            { city: "Paris", country: "France", zone: "Europe/Paris", icon: "🇫🇷" },
+            { city: "Beijing", country: "China", zone: "Asia/Shanghai", icon: "🇨🇳" },
+            { city: "Sydney", country: "Australia", zone: "Australia/Sydney", icon: "🇦🇺" },
+            { city: "Moscow", country: "Russia", zone: "Europe/Moscow", icon: "🇷🇺" },
+            { city: "Mumbai", country: "India", zone: "Asia/Kolkata", icon: "🇮🇳" },
+            { city: "Los Angeles", country: "USA", zone: "America/Los_Angeles", icon: "🇺🇸" },
+            { city: "Cairo", country: "Egypt", zone: "Africa/Cairo", icon: "🇪🇬" },
+            { city: "São Paulo", country: "Brazil", zone: "America/Sao_Paulo", icon: "🇧🇷" },
+            { city: "Toronto", country: "Canada", zone: "America/Toronto", icon: "🇨🇦" },
+            { city: "Istanbul", country: "Turkey", zone: "Europe/Istanbul", icon: "🇹🇷" },
+            { city: "Seoul", country: "South Korea", zone: "Asia/Seoul", icon: "🇰🇷" },
+            { city: "Mexico City", country: "Mexico", zone: "America/Mexico_City", icon: "🇲🇽" },
+            { city: "Riyadh", country: "Saudi Arabia", zone: "Asia/Riyadh", icon: "🇸🇦" },
+            { city: "Singapore", country: "Singapore", zone: "Asia/Singapore", icon: "🇸🇬" },
+            { city: "Cape Town", country: "South Africa", zone: "Africa/Johannesburg", icon: "🇿🇦" },
+            { city: "Hong Kong", country: "China", zone: "Asia/Hong_Kong", icon: "🇭🇰" },
+            { city: "Berlin", country: "Germany", zone: "Europe/Berlin", icon: "🇩🇪" },
+            { city: "Tehran", country: "Iran", zone: "Asia/Tehran", icon: "🇮🇷" },
+            { city: "Bangkok", country: "Thailand", zone: "Asia/Bangkok", icon: "🇹🇭" },
+            { city: "Rome", country: "Italy", zone: "Europe/Rome", icon: "🇮🇹" },
+            { city: "Nairobi", country: "Kenya", zone: "Africa/Nairobi", icon: "🇰🇪" },
+            { city: "Zurich", country: "Switzerland", zone: "Europe/Zurich", icon: "🇨🇭" }
+        ];
+
+        const container = document.getElementById('clocks-container');
+        const searchInput = document.getElementById('search-input');
+
+        // Function to create HTML for cards
+        function renderCards(data) {
+            container.innerHTML = '';
+            
+            data.forEach((loc, index) => {
+                const card = document.createElement('div');
+                // Add classes for styling and the data attribute for VanillaTilt
+                card.className = 'clock-card relative overflow-hidden group';
+                card.setAttribute('data-tilt', '');
+                card.setAttribute('data-tilt-max', '15'); // Maximum tilt rotation
+                card.setAttribute('data-tilt-speed', '400'); // Speed of enter/exit transition
+                card.setAttribute('data-tilt-glare', 'true'); // Enable glare effect
+                card.setAttribute('data-tilt-max-glare', '0.3'); // Max opacity of glare
+                
+                card.innerHTML = `
+                    <!-- Background World Map Icon for depth -->
+                    <div class="depth-map group-hover:opacity-20 transition-opacity duration-500">🗺️</div>
+
+                    <div class="flex justify-between items-start mb-8 depth-location">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-cyan-400 bg-cyan-950 px-3 py-1 rounded-full border border-cyan-800">
+                                ${loc.country}
+                            </span>
+                            <h2 class="text-2xl font-semibold mt-3 text-white tracking-tight">${loc.city}</h2>
+                        </div>
+                        <div class="text-4xl filter drop-shadow-lg">${loc.icon}</div>
+                    </div>
+
+                    <div class="mb-5 depth-time text-center">
+                        <span id="time-${index}" class="text-5xl font-bold time-glow tracking-wide">00:00:00</span>
+                        <span id="ampm-${index}" class="text-xl font-light text-slate-400 ml-1">--</span>
+                    </div>
+
+                    <div class="flex justify-between items-center border-t border-slate-800 pt-4 depth-date text-sm text-slate-500">
+                        <span id="date-${index}">Loading date...</span>
+                        <span id="offset-${index}" class="font-mono bg-slate-800/50 px-2 py-0.5 rounded">GMT --</span>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+
+            // Re-initialize VanillaTilt for newly created elements
+            VanillaTilt.init(document.querySelectorAll(".clock-card"));
+        }
+
+        // Function to update times accurately
+        function updateClocks() {
+            const now = new Date();
+            const searchTerm = searchInput.value.toLowerCase();
+
+            // We update based on current visible cards to maintain performance
+            locations.forEach((loc, index) => {
+                // Perform search filter check
+                if (searchTerm && !loc.city.toLowerCase().includes(searchTerm) && !loc.country.toLowerCase().includes(searchTerm)) {
+                    return; // Skip if it doesn't match search
+                }
+
+                const timeEl = document.getElementById(`time-${index}`);
+                const ampmEl = document.getElementById(`ampm-${index}`);
+                const dateEl = document.getElementById(`date-${index}`);
+                const offsetEl = document.getElementById(`offset-${index}`);
+
+                if(!timeEl) return; // Ensure elements exist (handles filtering)
+
+                try {
+                    // 1. Get Time string (HH:MM:SS)
+                    const timeStr = now.toLocaleTimeString('en-US', { 
+                        timeZone: loc.zone, 
+                        hour12: true, 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                    });
+                    
+                    // Split time and AM/PM
+                    const [rawTime, ampm] = timeStr.split(' ');
+                    timeEl.textContent = rawTime;
+                    ampmEl.textContent = ampm;
+                    
+                    // Change glow color for PM
+                    if(ampm === 'PM') {
+                        timeEl.classList.remove('time-glow');
+                        timeEl.classList.add('pm-glow');
+                        ampmEl.classList.add('text-magenta-400');
+                    } else {
+                        timeEl.classList.remove('pm-glow');
+                        timeEl.classList.add('time-glow');
+                        ampmEl.classList.remove('text-magenta-400');
+                    }
+
+                    // 2. Get Date (e.g., Wed, Oct 25)
+                    dateEl.textContent = now.toLocaleDateString('en-US', {
+                        timeZone: loc.zone,
+                        weekday: 'short', month: 'short', day: 'numeric'
+                    });
+
+                    // 3. Get GMT Offset (e.g., GMT+03:00)
+                    const parts = new Intl.DateTimeFormat('en-US', {
+                        timeZone: loc.zone,
+                        timeZoneName: 'shortOffset'
+                    }).formatToParts(now);
+                    const tzName = parts.find(p => p.type === 'timeZoneName').value;
+                    offsetEl.textContent = tzName;
+
+                } catch (e) {
+                    timeEl.textContent = "Error";
+                    console.error(`Error formatting zone ${loc.zone}`, e);
+                }
+            });
+        }
+
+        // Search logic
+        searchInput.addEventListener('input', () => {
+            const filtered = locations.filter(loc => 
+                loc.city.toLowerCase().includes(searchInput.value.toLowerCase()) || 
+                loc.country.toLowerCase().includes(searchInput.value.toLowerCase())
+            );
+            renderCards(filtered); // Re-render only matching cards
+            updateClocks(); // update times immediately
+        });
+
+        // Initial Initialization
+        renderCards(locations); // Render all first
+        updateClocks(); // Initial time set
+        
+        // Update every second (1000ms)
+        setInterval(updateClocks, 1000);
+    </script>
+</body>
+</html>
