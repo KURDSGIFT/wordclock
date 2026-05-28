@@ -3,224 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chronos 3D | Ultimate Time Suite</title>
+    <title>Chronos 3D | The Ultimate Time Suite</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-    
-    <!-- VanillaTilt.js for 3D Effects -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
 
     <style>
+        /* CSS Variables for Themes */
         :root {
             --bg-color: #050509;
             --card-bg: rgba(20, 20, 35, 0.6);
             --primary-neon: #0ff;
             --secondary-neon: #f0f;
-            --success-neon: #0f0;
             --text-main: #ffffff;
             --text-muted: #8b9bb4;
+            --nav-bg: rgba(10, 10, 15, 0.8);
+        }
+
+        body.light-theme {
+            --bg-color: #e2e8f0;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --primary-neon: #0284c7;
+            --secondary-neon: #db2777;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --nav-bg: rgba(255, 255, 255, 0.8);
         }
 
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(26, 21, 51, 0.5) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(15, 35, 45, 0.5) 0px, transparent 50%);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        .preserve-3d {
-            perspective: 1000px;
+        /* Navbar Styles */
+        nav {
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
+        .nav-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--primary-neon);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        /* 3D Card Styles */
+        .preserve-3d { perspective: 1000px; }
         .glass-card {
             background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(128, 128, 128, 0.2);
             backdrop-filter: blur(15px);
             border-radius: 24px;
             padding: 30px;
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.5s ease;
             transform-style: preserve-3d; 
             will-change: transform;
         }
-
         .glass-card:hover {
-            border-color: rgba(0, 255, 255, 0.3);
+            border-color: var(--primary-neon);
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
         }
 
-        /* 3D Depth Classes */
         .depth-1 { transform: translateZ(30px); }
         .depth-2 { transform: translateZ(60px); font-family: 'Orbitron', sans-serif; }
         .depth-3 { transform: translateZ(90px); }
-        .depth-bg { transform: translateZ(10px); opacity: 0.1; position: absolute; pointer-events: none; }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: #1a1a2e; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-neon); }
+        /* Views */
+        .view-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Inputs */
-        input[type="text"], input[type="date"], input[type="datetime-local"] {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            color-scheme: dark; /* Makes calendar picker dark mode */
-        }
-        input:focus {
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
-            border-color: var(--primary-neon);
+        /* Inputs & Buttons */
+        input, select, button.action-btn {
+            background: rgba(128, 128, 128, 0.1);
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 10px 15px;
             outline: none;
         }
+        input:focus, select:focus { border-color: var(--primary-neon); }
+        button.action-btn:hover { background: var(--primary-neon); color: #000; font-weight: bold; }
 
-        /* Glows */
-        .neon-text-cyan { color: var(--primary-neon); text-shadow: 0 0 10px rgba(0, 255, 255, 0.7); }
-        .neon-text-magenta { color: var(--secondary-neon); text-shadow: 0 0 10px rgba(255, 0, 255, 0.7); }
-        
         /* Calendar Grid */
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            text-align: center;
-        }
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.03);
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        .calendar-day:hover:not(.empty) {
-            background: rgba(0, 255, 255, 0.2);
-            cursor: pointer;
-            transform: scale(1.1);
-        }
-        .calendar-day.active {
-            background: var(--primary-neon);
-            color: black;
-            box-shadow: 0 0 15px var(--primary-neon);
-            font-weight: 700;
-        }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
+        .calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(128, 128, 128, 0.1); transition: all 0.2s; cursor: pointer; }
+        .calendar-day:hover:not(.empty) { background: rgba(0, 255, 255, 0.2); transform: scale(1.1); }
+        .calendar-day.active { background: var(--primary-neon); color: black; font-weight: 700; }
+        .calendar-day.holiday { border: 2px solid var(--secondary-neon); color: var(--secondary-neon); }
+
+        .neon-text { color: var(--primary-neon); text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="dark-theme">
 
-    <!-- Header -->
-    <header class="max-w-7xl mx-auto mb-12 mt-6 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div>
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter">
-                <span style="color: var(--text-main)">CHRONOS</span><span style="color: var(--primary-neon)">3D</span>
-            </h1>
-            <p class="text-muted mt-2 text-lg">World Clocks, Calendar & Time Calculators</p>
+    <!-- Navigation Bar -->
+    <nav class="w-full py-4 px-6 flex flex-wrap justify-between items-center">
+        <div class="text-2xl font-extrabold tracking-tighter">
+            CHRONOS<span style="color: var(--primary-neon)">3D</span>
         </div>
-    </header>
+        <div class="flex gap-2 md:gap-4 mt-4 md:mt-0 overflow-x-auto">
+            <button onclick="switchView('clocks')" id="nav-clocks" class="nav-btn active">🌍 Clocks</button>
+            <button onclick="switchView('tools')" id="nav-tools" class="nav-btn">⏱️ Tools</button>
+            <button onclick="switchView('calendar')" id="nav-calendar" class="nav-btn">📅 Calendar</button>
+            <button onclick="toggleTheme()" class="nav-btn">🌓 Theme</button>
+        </div>
+    </nav>
 
-    <main class="max-w-7xl mx-auto space-y-12">
-        
-        <!-- SECTION 1: World Clocks -->
-        <section>
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold border-b-2 border-cyan-500 pb-2 inline-block">Global Time Zones</h2>
-                <div class="relative w-64 md:w-80">
-                    <input type="text" id="search-input" placeholder="Search location..." 
-                           class="w-full px-5 py-3 rounded-full transition-all duration-300">
-                </div>
+    <main class="max-w-7xl mx-auto p-6 md:p-10">
+
+        <!-- VIEW 1: World Clocks -->
+        <section id="view-clocks" class="view-section active">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold">Global Time Zones</h2>
+                <input type="text" id="search-input" placeholder="Search city..." class="w-64">
             </div>
             <div id="clocks-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 preserve-3d">
                 <!-- Clocks generated via JS -->
             </div>
         </section>
 
-        <!-- SECTION 2: Tools (Age, Countdown, Calendar) -->
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 preserve-3d">
-            
-            <!-- Exact Age Calculator -->
-            <div class="glass-card" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
-                <div class="depth-bg text-8xl right-0 bottom-0">🎂</div>
-                <h3 class="text-xl font-semibold mb-4 text-cyan-400 depth-1">Exact Age Calculator</h3>
-                <p class="text-sm text-slate-400 mb-4 depth-1">Select your date of birth:</p>
+        <!-- VIEW 2: Productivity Tools -->
+        <section id="view-tools" class="view-section">
+            <h2 class="text-3xl font-bold mb-8">Productivity & Calculators</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 preserve-3d">
                 
-                <input type="date" id="dob-input" class="w-full px-4 py-3 rounded-lg mb-6 depth-1" onchange="calculateAge()">
-                
-                <div class="depth-3 bg-black/40 p-4 rounded-xl text-center border border-slate-700">
-                    <div id="age-result" class="text-2xl font-bold font-mono neon-text-magenta">
-                        0Y, 0M, 0D
-                    </div>
-                    <p class="text-xs text-slate-400 mt-2">Years, Months, Days</p>
-                </div>
-            </div>
-
-            <!-- Event Countdown -->
-            <div class="glass-card" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
-                <div class="depth-bg text-8xl right-0 bottom-0">⏳</div>
-                <h3 class="text-xl font-semibold mb-4 text-cyan-400 depth-1">Event Countdown</h3>
-                <p class="text-sm text-slate-400 mb-4 depth-1">Select a future date:</p>
-                
-                <input type="datetime-local" id="countdown-input" class="w-full px-4 py-3 rounded-lg mb-6 depth-1">
-                
-                <div class="depth-3 bg-black/40 p-4 rounded-xl text-center border border-slate-700">
-                    <div id="countdown-result" class="text-xl font-bold font-mono neon-text-cyan flex justify-center gap-3">
-                        <span>00<br><span class="text-xs text-slate-400">Days</span></span>:
-                        <span>00<br><span class="text-xs text-slate-400">Hrs</span></span>:
-                        <span>00<br><span class="text-xs text-slate-400">Min</span></span>:
-                        <span>00<br><span class="text-xs text-slate-400">Sec</span></span>
+                <!-- Pomodoro Timer -->
+                <div class="glass-card text-center" data-tilt data-tilt-max="10">
+                    <h3 class="text-xl font-bold mb-2 depth-1 text-red-400">🍅 Pomodoro</h3>
+                    <p class="text-sm var(--text-muted) mb-4 depth-1">25 Min Focus Mode</p>
+                    <div id="pomodoro-display" class="text-5xl font-bold neon-text depth-2 mb-6">25:00</div>
+                    <div class="flex justify-center gap-3 depth-3">
+                        <button onclick="startPomodoro()" class="action-btn">Start</button>
+                        <button onclick="resetPomodoro()" class="action-btn">Reset</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Interactive Calendar -->
-            <div class="glass-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1">
-                <div class="flex justify-between items-center mb-4 depth-1">
-                    <button onclick="changeMonth(-1)" class="px-3 py-1 bg-slate-800 rounded hover:bg-cyan-600 transition">&lt;</button>
-                    <h3 id="calendar-month-year" class="text-lg font-bold uppercase tracking-wider">Month Year</h3>
-                    <button onclick="changeMonth(1)" class="px-3 py-1 bg-slate-800 rounded hover:bg-cyan-600 transition">&gt;</button>
+                <!-- Stopwatch -->
+                <div class="glass-card text-center" data-tilt data-tilt-max="10">
+                    <h3 class="text-xl font-bold mb-2 depth-1 text-yellow-400">⏱️ Stopwatch</h3>
+                    <p class="text-sm var(--text-muted) mb-4 depth-1">Track your time</p>
+                    <div id="stopwatch-display" class="text-4xl font-bold neon-text depth-2 mb-6">00:00:00.00</div>
+                    <div class="flex justify-center gap-3 depth-3">
+                        <button onclick="startStopwatch()" class="action-btn">Start/Stop</button>
+                        <button onclick="resetStopwatch()" class="action-btn">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Meeting Planner -->
+                <div class="glass-card" data-tilt data-tilt-max="10">
+                    <h3 class="text-xl font-bold mb-2 depth-1 text-green-400">🤝 Meeting Planner</h3>
+                    <p class="text-sm var(--text-muted) mb-4 depth-1">Find overlap time</p>
+                    <select id="meet-zone-1" class="w-full mb-3 depth-1 text-sm"><option value="America/New_York">New York (EST)</option><option value="Europe/London">London (GMT)</option></select>
+                    <select id="meet-zone-2" class="w-full mb-4 depth-1 text-sm"><option value="Asia/Baghdad">Erbil/Baghdad</option><option value="Asia/Tokyo">Tokyo (JST)</option></select>
+                    <div class="text-center depth-2 p-3 bg-black/20 rounded">
+                        <span class="text-xs">Time Difference:</span><br>
+                        <span id="meet-diff" class="font-bold neon-text">Calculate to see</span>
+                    </div>
+                </div>
+
+                <!-- Age Calculator -->
+                <div class="glass-card" data-tilt data-tilt-max="10">
+                    <h3 class="text-xl font-bold mb-4 depth-1 text-purple-400">🎂 Age Calculator</h3>
+                    <input type="date" id="dob-input" class="w-full mb-4 depth-1" onchange="calculateAge()">
+                    <div class="text-center depth-2 p-4 bg-black/20 rounded">
+                        <div id="age-result" class="text-2xl font-bold neon-text">0Y, 0M, 0D</div>
+                    </div>
+                </div>
+
+                <!-- Event Countdown -->
+                <div class="glass-card" data-tilt data-tilt-max="10">
+                    <h3 class="text-xl font-bold mb-4 depth-1 text-blue-400">⏳ Event Countdown</h3>
+                    <input type="datetime-local" id="countdown-input" class="w-full mb-4 depth-1">
+                    <div class="text-center depth-2 p-4 bg-black/20 rounded">
+                        <div id="countdown-result" class="text-lg font-bold neon-text">Select Date</div>
+                    </div>
+                </div>
+
+                <!-- Alarm Clock -->
+                <div class="glass-card" data-tilt data-tilt-max="10">
+                    <h3 class="text-xl font-bold mb-4 depth-1 text-pink-400">🔔 Alarm Clock</h3>
+                    <input type="time" id="alarm-input" class="w-full mb-4 depth-1">
+                    <button onclick="setAlarm()" class="action-btn w-full depth-2 mb-2">Set Alarm</button>
+                    <div id="alarm-status" class="text-center text-sm var(--text-muted) depth-1">No alarm set</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 3: Interactive Calendar -->
+        <section id="view-calendar" class="view-section">
+            <h2 class="text-3xl font-bold mb-8">Calendar & Events</h2>
+            <div class="max-w-3xl mx-auto glass-card" data-tilt data-tilt-max="2" data-tilt-glare="true">
+                <div class="flex justify-between items-center mb-6 depth-1">
+                    <button onclick="changeMonth(-1)" class="action-btn">&lt; Prev</button>
+                    <h3 id="calendar-month-year" class="text-2xl font-bold uppercase tracking-wider">Month Year</h3>
+                    <button onclick="changeMonth(1)" class="action-btn">Next &gt;</button>
                 </div>
                 
-                <div class="calendar-grid text-xs text-slate-400 mb-2 depth-1">
+                <div class="calendar-grid text-sm var(--text-muted) mb-2 font-bold depth-1">
                     <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                 </div>
-                <div id="calendar-days" class="calendar-grid depth-2">
+                <div id="calendar-days" class="calendar-grid depth-2 text-lg">
                     <!-- Days generated via JS -->
                 </div>
+                <div class="mt-6 flex justify-center gap-4 text-sm depth-1">
+                    <span class="flex items-center gap-2"><div class="w-3 h-3 bg-[var(--primary-neon)] rounded-full"></div> Today</span>
+                    <span class="flex items-center gap-2"><div class="w-3 h-3 border-2 border-[var(--secondary-neon)] rounded-full"></div> Special Event/Holiday</span>
+                </div>
             </div>
-
         </section>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="max-w-7xl mx-auto text-center mt-20 py-8 border-t border-slate-800/50">
-        <p class="text-slate-600">&copy; 2024 Chronos3D Studios. Advanced Time Tracking Suite.</p>
-    </footer>
+    <!-- Audio for Alarm -->
+    <audio id="alarm-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
     <script>
         /* =========================================
-           1. WORLD CLOCKS LOGIC
+           1. NAVIGATION & THEME LOGIC
+           ========================================= */
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`view-${viewId}`).classList.add('active');
+            document.getElementById(`nav-${viewId}`).classList.add('active');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+        }
+
+        /* =========================================
+           2. WORLD CLOCKS WITH WEATHER MOCKUP
            ========================================= */
         const locations = [
-            { city: "Local Time", country: "Your Location", zone: Intl.DateTimeFormat().resolvedOptions().timeZone, icon: "🏠" },
-            { city: "London", country: "UK", zone: "Europe/London", icon: "🇬🇧" },
-            { city: "New York", country: "USA", zone: "America/New_York", icon: "🇺🇸" },
-            { city: "Tokyo", country: "Japan", zone: "Asia/Tokyo", icon: "🇯🇵" },
-            { city: "Dubai", country: "UAE", zone: "Asia/Dubai", icon: "🇦🇪" },
-            { city: "Erbil", country: "Iraq", zone: "Asia/Baghdad", icon: "🇮🇶" },
-            { city: "Paris", country: "France", zone: "Europe/Paris", icon: "🇫🇷" },
-            { city: "Beijing", country: "China", zone: "Asia/Shanghai", icon: "🇨🇳" },
-            { city: "Sydney", country: "Australia", zone: "Australia/Sydney", icon: "🇦🇺" },
-            { city: "Moscow", country: "Russia", zone: "Europe/Moscow", icon: "🇷🇺" },
-            { city: "Istanbul", country: "Turkey", zone: "Europe/Istanbul", icon: "🇹🇷" },
-            { city: "Berlin", country: "Germany", zone: "Europe/Berlin", icon: "🇩🇪" }
+            { city: "Local Time", country: "You", zone: Intl.DateTimeFormat().resolvedOptions().timeZone, icon: "🏠", weather: "☀️ 24°C" },
+            { city: "London", country: "UK", zone: "Europe/London", icon: "🇬🇧", weather: "🌧️ 15°C" },
+            { city: "New York", country: "USA", zone: "America/New_York", icon: "🇺🇸", weather: "⛅ 20°C" },
+            { city: "Tokyo", country: "Japan", zone: "Asia/Tokyo", icon: "🇯🇵", weather: "🌸 18°C" },
+            { city: "Dubai", country: "UAE", zone: "Asia/Dubai", icon: "🇦🇪", weather: "🏜️ 35°C" },
+            { city: "Erbil", country: "Iraq", zone: "Asia/Baghdad", icon: "🇮🇶", weather: "☀️ 30°C" },
+            { city: "Paris", country: "France", zone: "Europe/Paris", icon: "🇫🇷", weather: "🌥️ 16°C" },
+            { city: "Sydney", country: "Australia", zone: "Australia/Sydney", icon: "🇦🇺", weather: "🌊 22°C" }
         ];
 
         const container = document.getElementById('clocks-container');
@@ -233,23 +274,19 @@
                 card.className = 'glass-card group';
                 card.setAttribute('data-tilt', '');
                 card.setAttribute('data-tilt-max', '15');
-                card.setAttribute('data-tilt-speed', '400');
-                card.setAttribute('data-tilt-glare', 'true');
-                card.setAttribute('data-tilt-max-glare', '0.3');
                 
                 card.innerHTML = `
-                    <div class="depth-bg text-9xl right-0 bottom-[-20px]">${loc.icon}</div>
-                    <div class="flex justify-between items-start mb-6 depth-1">
+                    <div class="flex justify-between items-start mb-4 depth-1">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-400 bg-cyan-950 px-2 py-1 rounded-full border border-cyan-800">${loc.country}</span>
-                            <h2 class="text-xl font-semibold mt-2 text-white">${loc.city}</h2>
+                            <span class="text-xs font-bold uppercase opacity-70">${loc.country} ${loc.icon}</span>
+                            <h2 class="text-xl font-semibold mt-1">${loc.city}</h2>
                         </div>
+                        <div class="text-sm font-mono bg-black/20 px-2 py-1 rounded border border-gray-500/30">${loc.weather}</div>
                     </div>
-                    <div class="mb-4 depth-2 text-center">
-                        <span id="time-${index}" class="text-4xl font-bold neon-text-cyan tracking-wide">00:00:00</span>
-                        <span id="ampm-${index}" class="text-sm font-light text-slate-400 ml-1">--</span>
+                    <div class="mb-3 depth-2 text-center mt-6">
+                        <span id="time-${index}" class="text-4xl font-bold neon-text tracking-wide">00:00:00</span>
                     </div>
-                    <div class="flex justify-between items-center border-t border-slate-800 pt-3 depth-3 text-xs text-slate-500">
+                    <div class="text-center border-t border-gray-500/30 pt-3 depth-3 text-sm opacity-70">
                         <span id="date-${index}">Loading...</span>
                     </div>
                 `;
@@ -263,154 +300,182 @@
             const searchTerm = searchInput.value.toLowerCase();
 
             locations.forEach((loc, index) => {
-                if (searchTerm && !loc.city.toLowerCase().includes(searchTerm) && !loc.country.toLowerCase().includes(searchTerm)) return;
+                if (searchTerm && !loc.city.toLowerCase().includes(searchTerm)) return;
 
                 const timeEl = document.getElementById(`time-${index}`);
-                const ampmEl = document.getElementById(`ampm-${index}`);
                 const dateEl = document.getElementById(`date-${index}`);
 
                 if(timeEl) {
-                    const timeStr = now.toLocaleTimeString('en-US', { timeZone: loc.zone, hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    const [rawTime, ampm] = timeStr.split(' ');
-                    timeEl.textContent = rawTime;
-                    ampmEl.textContent = ampm;
-
-                    if(ampm === 'PM') {
-                        timeEl.classList.replace('neon-text-cyan', 'neon-text-magenta');
-                    } else {
-                        timeEl.classList.replace('neon-text-magenta', 'neon-text-cyan');
-                    }
-
-                    dateEl.textContent = now.toLocaleDateString('en-US', { timeZone: loc.zone, weekday: 'short', month: 'short', day: 'numeric' });
+                    timeEl.textContent = now.toLocaleTimeString('en-US', { timeZone: loc.zone, hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    dateEl.textContent = now.toLocaleDateString('en-US', { timeZone: loc.zone, weekday: 'short', month: 'long', day: 'numeric' });
                 }
             });
         }
 
         searchInput.addEventListener('input', () => {
-            const filtered = locations.filter(loc => loc.city.toLowerCase().includes(searchInput.value.toLowerCase()) || loc.country.toLowerCase().includes(searchInput.value.toLowerCase()));
+            const filtered = locations.filter(loc => loc.city.toLowerCase().includes(searchInput.value.toLowerCase()));
             renderCards(filtered);
             updateClocks();
         });
 
         /* =========================================
-           2. EXACT AGE CALCULATOR LOGIC
+           3. POMODORO TIMER
+           ========================================= */
+        let pomoInterval;
+        let pomoTime = 25 * 60;
+        let isPomoRunning = false;
+
+        function updatePomoDisplay() {
+            let m = Math.floor(pomoTime / 60).toString().padStart(2, '0');
+            let s = (pomoTime % 60).toString().padStart(2, '0');
+            document.getElementById('pomodoro-display').innerText = `${m}:${s}`;
+        }
+
+        function startPomodoro() {
+            if (isPomoRunning) return;
+            isPomoRunning = true;
+            pomoInterval = setInterval(() => {
+                if(pomoTime > 0) { pomoTime--; updatePomoDisplay(); }
+                else { clearInterval(pomoInterval); alert('Pomodoro Finished! Take a break.'); }
+            }, 1000);
+        }
+
+        function resetPomodoro() {
+            clearInterval(pomoInterval);
+            isPomoRunning = false;
+            pomoTime = 25 * 60;
+            updatePomoDisplay();
+        }
+
+        /* =========================================
+           4. STOPWATCH
+           ========================================= */
+        let stopInterval;
+        let stopTime = 0;
+        let isStopRunning = false;
+
+        function startStopwatch() {
+            if (isStopRunning) { clearInterval(stopInterval); isStopRunning = false; return; }
+            isStopRunning = true;
+            stopInterval = setInterval(() => {
+                stopTime += 10;
+                let h = Math.floor(stopTime / 3600000).toString().padStart(2, '0');
+                let m = Math.floor((stopTime % 3600000) / 60000).toString().padStart(2, '0');
+                let s = Math.floor((stopTime % 60000) / 1000).toString().padStart(2, '0');
+                let ms = Math.floor((stopTime % 1000) / 10).toString().padStart(2, '0');
+                document.getElementById('stopwatch-display').innerText = `${m}:${s}.${ms}`;
+            }, 10);
+        }
+
+        function resetStopwatch() {
+            clearInterval(stopInterval);
+            isStopRunning = false;
+            stopTime = 0;
+            document.getElementById('stopwatch-display').innerText = `00:00.00`;
+        }
+
+        /* =========================================
+           5. AGE, COUNTDOWN & ALARM
            ========================================= */
         function calculateAge() {
-            const dobInput = document.getElementById('dob-input').value;
-            if(!dobInput) return;
-
-            const birthDate = new Date(dobInput);
-            const today = new Date();
-
-            let years = today.getFullYear() - birthDate.getFullYear();
-            let months = today.getMonth() - birthDate.getMonth();
-            let days = today.getDate() - birthDate.getDate();
-
-            if (days < 0) {
-                months--;
-                // Get days in previous month
-                const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-                days += prevMonth.getDate();
-            }
-            if (months < 0) {
-                years--;
-                months += 12;
-            }
-
-            document.getElementById('age-result').innerHTML = `${years}<span class="text-sm text-slate-400">Y</span>, ${months}<span class="text-sm text-slate-400">M</span>, ${days}<span class="text-sm text-slate-400">D</span>`;
+            const dob = new Date(document.getElementById('dob-input').value);
+            if(!dob) return;
+            const diff = new Date() - dob;
+            const ageDate = new Date(diff);
+            document.getElementById('age-result').innerText = `${Math.abs(ageDate.getUTCFullYear() - 1970)}Y, ${ageDate.getUTCMonth()}M, ${ageDate.getUTCDate() - 1}D`;
         }
 
-        /* =========================================
-           3. COUNTDOWN TIMER LOGIC
-           ========================================= */
-        let countdownInterval;
-        const countdownInput = document.getElementById('countdown-input');
-        
-        function updateCountdown() {
-            const targetDate = new Date(countdownInput.value).getTime();
-            if(isNaN(targetDate)) return;
-
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-
-            const resultEl = document.getElementById('countdown-result');
-
-            if (distance < 0) {
-                resultEl.innerHTML = `<span class="text-red-500">Date has passed!</span>`;
-                return;
-            }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            resultEl.innerHTML = `
-                <span>${days.toString().padStart(2, '0')}<br><span class="text-xs text-slate-400">Days</span></span>:
-                <span>${hours.toString().padStart(2, '0')}<br><span class="text-xs text-slate-400">Hrs</span></span>:
-                <span>${minutes.toString().padStart(2, '0')}<br><span class="text-xs text-slate-400">Min</span></span>:
-                <span>${seconds.toString().padStart(2, '0')}<br><span class="text-xs text-slate-400">Sec</span></span>
-            `;
-        }
-        
-        countdownInput.addEventListener('change', () => {
-            clearInterval(countdownInterval);
-            updateCountdown();
-            countdownInterval = setInterval(updateCountdown, 1000);
+        let countInt;
+        document.getElementById('countdown-input').addEventListener('change', (e) => {
+            clearInterval(countInt);
+            const target = new Date(e.target.value).getTime();
+            countInt = setInterval(() => {
+                const now = new Date().getTime();
+                const dist = target - now;
+                if(dist < 0) { document.getElementById('countdown-result').innerText = "Time's up!"; return; }
+                let d = Math.floor(dist / (1000 * 60 * 60 * 24));
+                let h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById('countdown-result').innerText = `${d}d ${h}h ${m}m`;
+            }, 1000);
         });
 
+        let alarmTime = null;
+        function setAlarm() {
+            alarmTime = document.getElementById('alarm-input').value;
+            if(alarmTime) document.getElementById('alarm-status').innerText = `Alarm set for ${alarmTime}`;
+        }
+        setInterval(() => {
+            if(alarmTime) {
+                const now = new Date();
+                const current = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+                if(current === alarmTime && now.getSeconds() === 0) {
+                    document.getElementById('alarm-sound').play();
+                    alert('⏰ ALARM RINGING!');
+                    alarmTime = null;
+                    document.getElementById('alarm-status').innerText = `No alarm set`;
+                }
+            }
+        }, 1000);
 
         /* =========================================
-           4. INTERACTIVE CALENDAR LOGIC
+           6. MEETING PLANNER (Overlap calc)
            ========================================= */
-        let currDate = new Date();
-        let currMonth = currDate.getMonth();
-        let currYear = currDate.getFullYear();
+        document.getElementById('meet-zone-2').addEventListener('change', calcMeeting);
+        document.getElementById('meet-zone-1').addEventListener('change', calcMeeting);
+        
+        function calcMeeting() {
+            const z1 = document.getElementById('meet-zone-1').value;
+            const z2 = document.getElementById('meet-zone-2').value;
+            const d1 = new Date().toLocaleString("en-US", {timeZone: z1});
+            const d2 = new Date().toLocaleString("en-US", {timeZone: z2});
+            const diffHours = (new Date(d1) - new Date(d2)) / 3600000;
+            document.getElementById('meet-diff').innerText = `${Math.abs(Math.round(diffHours))} Hours Difference`;
+        }
 
+        /* =========================================
+           7. CALENDAR WITH HOLIDAYS
+           ========================================= */
+        let currMonth = new Date().getMonth();
+        let currYear = new Date().getFullYear();
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        // Mock holidays (Day numbers for specific months)
+        const holidays = { 0: [1], 2: [21], 11: [25, 31] }; // Jan 1, Mar 21 (Newroz), Dec 25/31
 
         function renderCalendar() {
             const daysContainer = document.getElementById("calendar-days");
-            const monthYearText = document.getElementById("calendar-month-year");
-            
             daysContainer.innerHTML = "";
-            monthYearText.textContent = `${months[currMonth]} ${currYear}`;
+            document.getElementById("calendar-month-year").textContent = `${months[currMonth]} ${currYear}`;
 
             const firstDay = new Date(currYear, currMonth, 1).getDay();
             const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
-
-            // Empty boxes before the 1st of the month
-            for (let i = 0; i < firstDay; i++) {
-                daysContainer.innerHTML += `<div class="calendar-day empty"></div>`;
-            }
-
-            // Days of the month
             const today = new Date();
+
+            for (let i = 0; i < firstDay; i++) daysContainer.innerHTML += `<div class="calendar-day empty"></div>`;
+
             for (let i = 1; i <= lastDate; i++) {
-                let isToday = i === today.getDate() && currMonth === today.getMonth() && currYear === today.getFullYear() ? "active" : "";
-                daysContainer.innerHTML += `<div class="calendar-day ${isToday}">${i}</div>`;
+                let classes = "calendar-day";
+                if (i === today.getDate() && currMonth === today.getMonth() && currYear === today.getFullYear()) classes += " active";
+                if (holidays[currMonth] && holidays[currMonth].includes(i)) classes += " holiday";
+                
+                daysContainer.innerHTML += `<div class="${classes}">${i}</div>`;
             }
         }
 
         function changeMonth(dir) {
             currMonth += dir;
-            if (currMonth < 0) {
-                currMonth = 11;
-                currYear--;
-            } else if (currMonth > 11) {
-                currMonth = 0;
-                currYear++;
-            }
+            if (currMonth < 0) { currMonth = 11; currYear--; }
+            else if (currMonth > 11) { currMonth = 0; currYear++; }
             renderCalendar();
         }
 
-
-        // Initialize Everything
+        // Init App
         renderCards(locations);
         updateClocks();
         setInterval(updateClocks, 1000);
         renderCalendar();
-        
+        VanillaTilt.init(document.querySelectorAll(".glass-card"));
     </script>
 </body>
 </html>
