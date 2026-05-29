@@ -3,31 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تاقیکردنەوەی ئاسایشی Firebase</title>
+    <title>Dashboardـی تاقیکردنەوەی ئاسایشی Firebase</title>
     <style>
-        body { font-family: Tahoma, sans-serif; padding: 30px; background-color: #f4f6f9; text-align: center; }
-        .card { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        button { background-color: #007bff; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
-        button:hover { background-color: #0056b3; }
-        input { padding: 10px; width: 80%; font-size: 16px; text-align: center; border: 1px solid #ccc; border-radius: 5px; }
-        #result { margin-top: 25px; padding: 15px; border-radius: 5px; text-align: left; max-height: 300px; overflow-y: auto; }
-        .safe { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; text-align: center; }
-        .danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        body { font-family: Tahoma, sans-serif; padding: 20px; background-color: #f0f2f5; color: #333; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h2 { color: #1a73e8; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-top: 0; }
+        label { font-weight: bold; display: block; margin-bottom: 8px; }
+        select, input { padding: 10px; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; margin-bottom: 15px; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        button { background-color: #1a73e8; color: white; border: none; padding: 10px 20px; font-size: 15px; border-radius: 4px; cursor: pointer; flex: 1; min-width: 150px; }
+        button:hover { background-color: #1557b0; }
+        button.secondary { background-color: #5f6368; }
+        button.secondary:hover { background-color: #4c4f52; }
+        .result-box { margin-top: 15px; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; font-size: 14px; display: none; dir: ltr; text-align: left; max-height: 250px; overflow-y: auto; }
+        .safe { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; display: block; dir: rtl; text-align: right; font-family: Tahoma, sans-serif; }
+        .danger { background-color: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; display: block; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>تاقیکەرەوەی ئاسایشی Firebase Firestore</h2>
-    <p>ناوی ئەو کۆلێکشنە (Collection) بنووسە کە دەتەوێت تاقیکردنەوەی لەسەر بکەیت (بۆ نموونە: <code>users</code>):</p>
-    <input type="text" id="collectionName" value="users"><br>
-    <button id="testBtn">دەستپێکردنی تاقیکردنەوە</button>
-    <div id="result"></div>
+<div class="container">
+    <h1 style="text-align: center; color: #202124;">پشکنەری هاک و دزینی داتای Firebase</h1>
+    
+    <div class="card">
+        <h2>١. پشکنینی دزینی داتاکانی Firestore</h2>
+        <label for="collectionSelect">کۆلێکشنێک هەڵبژێره بۆ تاقیکردنەوە:</label>
+        <select id="collectionSelect">
+            <option value="users">users (بەکارهێنەران)</option>
+            <option value="profiles">profiles (پڕۆفایلەکان)</option>
+            <option value="configs">configs (ڕێکخستنەکان)</option>
+            <option value="messages">messages (نامەکان)</option>
+            <option value="orders">orders (داواکارییەکان)</option>
+            <option value="admin">admin (بڕگە نهێنییەکانی ئەدمین)</option>
+        </select>
+        
+        <label for="customCollection">یان ناوی کۆلێکشنێکی تر بنووسە ئەگەر لەوانەی سەرەوە نییە:</label>
+        <input type="text" id="customCollection" placeholder="بۆ نموونە: products">
+        
+        <button id="testDbBtn">هەوڵدانی دزینی داتای ئەم بەشە</button>
+        <div id="dbResult" class="result-box"></div>
+    </div>
+
+    <div class="card">
+        <h2>٢. پشکنینی بەشی Authentication (ناسنامە)</h2>
+        <p style="font-size: 14px; color: #5f6368;">لێرەدا تاقیدەکەینەوە ئایا هاکەرەکە دەتوانێت بەبێ کۆنتڕۆڵی تۆ، خۆی تۆمار بکات یان زانیاری بەکارهێنەری داخلبوو ببێنێت:</p>
+        
+        <div class="btn-group">
+            <button id="testAuthAnymousBtn" class="secondary">تاقیکردنەوەی لۆگینی بێناو (Anonymous)</button>
+            <button id="testCreateUserBtn">هەوڵدانی دروستکردنی ئەکاونتی ساختە</button>
+        </div>
+        <div id="authResult" class="result-box"></div>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, limit, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -39,42 +72,85 @@ const firebaseConfig = {
   appId: "1:20279723956:web:f93db1652e532fbf8694e1",
   measurementId: "G-C0PB34CXWP"
 };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    document.getElementById('testBtn').addEventListener('click', async () => {
-        const resultDiv = document.getElementById('result');
-        const collName = document.getElementById('collectionName').value;
-        resultDiv.className = '';
-        resultDiv.innerHTML = 'کاتی تاقیکردنەوە...';
+    // --- لۆجیکی تاقیکردنەوەی داتابەیس ---
+    document.getElementById('testDbBtn').addEventListener('click', async () => {
+        const dbResult = document.getElementById('dbResult');
+        const selectVal = document.getElementById('collectionSelect').value;
+        const customVal = document.getElementById('customCollection').value;
+        const targetCollection = customVal.trim() !== "" ? customVal.trim() : selectVal;
+
+        dbResult.style.display = 'block';
+        dbResult.className = 'result-box';
+        dbResult.innerHTML = 'کاتی پشکنینی داتابەیس...';
 
         try {
-            // هەوڵدان بۆ خوێندنەوەی ٣ دۆکیومێنت بەبێ ئەوەی هیچ ئەکاونتێک لۆگین بووبێت
-            const q = query(collection(db, collName), limit(3));
+            const q = query(collection(db, targetCollection), limit(3));
             const querySnapshot = await getDocs(q);
             
             if(querySnapshot.empty) {
-                resultDiv.className = 'danger';
-                resultDiv.innerHTML = `<strong>ئەنجام:</strong> کۆلێکشنەکە بەتاڵە یان بوونی نییە، بەڵام ڕێگریت لێ نەکرا! ئەگەر داتای تێدا بێت، هاکەرەکە دەتوانێت بیبینێت.`;
+                dbResult.className = 'result-box danger';
+                dbResult.innerHTML = `⚠️ مۆڵەت درا! بەڵام کۆلێکشنی [${targetCollection}] لەسەر سێرڤەر بەتاڵە یان ناوی ڕاست نییە. بەڵام ئەگەر داتای تێدا بووایە، دەتونرا بدزرێت چونکە Firebase بلۆکی نەکردیت.`;
                 return;
             }
 
             let dataStr = '';
             querySnapshot.forEach((doc) => {
-                dataStr += `${doc.id} => ${JSON.stringify(doc.data())}\n`;
+                dataStr += `ID: ${doc.id}\nData: ${JSON.stringify(doc.data(), null, 2)}\n\n`;
             });
 
-            resultDiv.className = 'danger';
-            resultDiv.innerHTML = `<h3 style="color:#721c24; margin:0;">⚠️ داتابەیسەکەت پارێزراو نییە!</h3><p>توانرا بەبێ لۆگین داتاکان بخوێندرێتەوە:</p><pre dir="ltr">${dataStr}</pre>`;
+            dbResult.className = 'result-box danger';
+            dbResult.innerHTML = `🚨 ئاگاداری! داتابەیسەکەت هاککرا!\nتوانرا داتاکانی کۆلێکشنی [${targetCollection}] بەبێ لۆگین ببرێت:\n\n${dataStr}`;
             
         } catch (error) {
             if (error.code === 'permission-denied') {
-                resultDiv.className = 'safe';
-                resultDiv.innerHTML = `<h3 style="color:#155724; margin:0;">✅ داتابەیسەکەت پارێزراوە!</h3><p>Firebase ڕێگەی نەدا داتاکان بخوێندرێتەوە بەبێ مۆڵەت (Permission Denied).</p>`;
+                dbResult.className = 'result-box safe';
+                dbResult.innerHTML = `✅ سیستەمەکە پارێزراوە!\nFirebase ڕێگەی نەدا داتاکانی کۆلێکشنی [${targetCollection}] بخوێندرێتەوە (Permission Denied).`;
             } else {
-                resultDiv.className = 'danger';
-                resultDiv.innerHTML = `<strong>هەڵەیەک ڕوویدا:</strong> ${error.message}`;
+                dbResult.className = 'result-box danger';
+                dbResult.innerHTML = `هەڵەیەک لە کۆدەکەدا هەیە: ${error.message}`;
             }
+        }
+    });
+
+    // --- لۆجیکی تاقیکردنەوەی لۆگینی بێناو ---
+    document.getElementById('testAuthAnymousBtn').addEventListener('click', async () => {
+        const authResult = document.getElementById('authResult');
+        authResult.style.display = 'block';
+        authResult.className = 'result-box';
+        authResult.innerHTML = 'کاتی تاقیکردنەوە...';
+
+        try {
+            const userCredential = await signInAnonymously(auth);
+            authResult.className = 'result-box danger';
+            authResult.innerHTML = `⚠️ لۆگینی بێناو (Anonymous Auth) چالاکە لە پڕۆژەکەتدا!\nهاکەرەکە توانی بەبێ ئیمەیڵ و پاسوۆرد ببێتە بەکارهێنەر لە سیستەمەکەتدا.\nUser UID: ${userCredential.user.uid}`;
+        } catch (error) {
+            authResult.className = 'result-box safe';
+            authResult.innerHTML = `✅ لۆگینی بێناو (Anonymous Auth) داخراوە و پارێزراویت.\nنامەی سێرڤەر: ${error.message}`;
+        }
+    });
+
+    // --- لۆجیکی دروستکردنی ئەکاونتی ساختە ---
+    document.getElementById('testCreateUserBtn').addEventListener('click', async () => {
+        const authResult = document.getElementById('authResult');
+        authResult.style.display = 'block';
+        authResult.className = 'result-box';
+        authResult.innerHTML = 'کاتی هەوڵدان بۆ دروستکردنی ئەکاونت...';
+
+        const fakeEmail = `hacker_${Math.floor(Math.random() * 10000)}@test.com`;
+        const fakePassword = "HackerPassword123!";
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, fakePassword);
+            authResult.className = 'result-box danger';
+            authResult.innerHTML = `🚨 ئەکاونت بە سەرکەوتوویی دروستکرا لە بەشی Auth!\nئەمە کێشە نییە ئەگەر وێبسایتەکەت کراوە بێت بۆ خەڵک، بەڵام ئەگەر کلیلەکانت ئاشکرا بووبێت، هاکەرەکە دەتوانێت ملیۆنان ئەکاونتی ساختە بەم شێوەیە دروست بكات بۆ تێکدانی سێرڤەرەکەت.\nئیمەیڵی دروستکراو: ${fakeEmail}\nUID: ${userCredential.user.uid}`;
+        } catch (error) {
+            authResult.className = 'result-box safe';
+            authResult.innerHTML = `❌ سێرڤەر ڕێگەی نەدا ئەکاونت دروست بکرێت.\nنامەی سێرڤەر: ${error.message}\n(تێبینی: ئەگەر لە بنەڕەتدا بەشی Sign-upـت لە Firebase بەستبێت، ئەم کورتکردنەوەیە ئاساییە، بە مەرجێک یاسای داتابەیسەکەت توند بێت).`;
         }
     });
 </script>
